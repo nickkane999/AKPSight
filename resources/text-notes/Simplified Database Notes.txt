@@ -1,0 +1,139 @@
+akpsi_database Database
+
+
+users Table
+	id
+	username
+	password
+	firstName
+	lastName
+	committee1
+	committee2
+	committee3
+	
+	USEFUL STATEMENTS:
+		INSERT INTO users (id, username, password, firstName, lastName) VALUES ('', 'sally@miamioh.edu', 'sally', 'sally', 'woodsworth');
+	EXTRA NOTES:
+		CommitteeX is matched by number
+			1 = Investment
+			2 = Professional Development
+			3 = Brotherhood
+			4 = Philanthropy
+			5 = Finance
+			6 = Consulting
+			7 = Sustainability
+			8 = Finance
+			9 = Recruitment
+			(adding 1 to begining of any number signals a committee head)
+	CHANGES
+
+events Table
+	id
+	eventName
+	date
+	description
+	committee [0 - 8+]
+	committeeStatus [0 - 3]
+	points
+	openClosed [0 or 1]
+	presentPast [0 or 1] (CHANGE: Calculate past/present based off of the date; you can remove it)
+	
+	USEFUL STATEMENTS:
+		INSERT INTO events (eventName, points, description, date, openClosed, committee, committeeStatus. presentPast) VALUES ('First Round Interviews', '5');
+	EXTRA NOTES
+		presentPast will determine what info is displayed, and what events are hidden in the database
+		committeeStatus meaning
+			0 = Incomplete
+			1 = In Progress
+			2 = Finished
+			3 = Dropped
+
+
+attendance Table
+	user_id
+	event_id
+	status [0 - 7]
+
+	USEFUL STATEMENTS:
+		INSERT INTO attendance (user_id, event_id, status) VALUES ('4', '1', '5');
+	EXTRA NOTES:
+		status will change depending on the number
+			0 = Extra
+			1 = Required
+			2 = Excused
+			3 = Unexcused
+			4 = Finished
+			5 = Incomplete
+			6 = Extra (Finished)
+			7 = Extra (Incomplete)
+	
+
+committeeX Table (Multiple Tables for X number of committees
+	id
+	username
+	comments1
+	comments2
+	comments3
+	roleID1
+	roleID2
+
+	USEFUL STATEMENTS:
+		INSERT INTO attendance (user_id, event_id) VALUES ('2', '2');
+	EXTRA NOTES:
+		May allow multiple comments/roles to be added at chair's discression
+
+CREATE TABLE committee9 (
+	id INT(11) NOT NULL AUTO_INCREMENT,
+	username VARCHAR(30),
+	comment1 VARCHAR(300),
+	comment2 VARCHAR(300),
+	comment3 VARCHAR(300),
+	roleID1 INT(4),
+	roleID2 INT(4),
+	PRIMARY KEY (id));
+
+Roles
+	id
+	roleName
+	description
+	username
+	assigned [0 or 1]
+	status [0 - 2]
+	committee [0 - 8+]
+
+	USEFUL STATEMENTS:
+		INSERT INTO attendance (user_id, event_id) VALUES ('2', '2');
+	EXTRA NOTES:
+		status meanings
+			0 = Filled
+			1 = Open
+			2 = allOpen
+
+
+Functions
+
+Profile Page
+	Finding amount of points from an event 
+		users.username,
+		SELECT events.eventName, events.date, attendance.status, events.points, events.presentPast, events.description
+		FROM events
+		INNER JOIN attendance ON events.id = attendance.event_id
+		INNER JOIN users ON users.id = attendance.user_id
+		WHERE users.username = 'bob@miamioh.edu';
+
+	
+	
+	SELECT users.username, SUM(events.points) AS Points
+	FROM events
+	INNER JOIN attendance ON events.id = attendance.event_id
+	INNER JOIN users ON users.id = attendance.user_id
+	GROUP BY users.username;
+
+
+Reseting id a user has
+	UPDATE users SET committee1 = 8, committee2 = 7, committee3 = 6 WHERE id = 10;
+
+
+Add new field to a table
+	ALTER TABLE [X table]
+	ADD [X column] VARCHAR(30)
